@@ -3,7 +3,8 @@ import { Inter } from 'next/font/google'
 
 import './globals.css'
 import { cn } from '@/lib/utils'
-import SideNavbar from '@/components/SideNavbar'
+// import SideNavbar from '@/components/SideNavbar'
+import { Toaster } from 'react-hot-toast'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -28,11 +29,14 @@ export default function RootLayout ({
           //? Sidebar
         }
         {/* <p className='border'>Sidebar</p> */}
-        <SideNavbar />
+        {/* <SideNavbar /> */}
         {
           //? MainPage
         }
-        <div className='p-8 w-full'>{children}</div>
+        <div className='p-8 w-full'>
+          {children}
+          <Toaster />
+        </div>
       </body>
     </html>
   )

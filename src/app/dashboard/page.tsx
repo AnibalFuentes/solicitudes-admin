@@ -1,52 +1,62 @@
-import { AppSidebar } from "@/components/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+// import Card, { CardContent, CardProps } from '@/components/Card'
+'use client'
+import CardDash, { CardProps } from '@/components/CardDashboard'
+import PageTitle from '@/components/PageTitle'
+import { PieChartG } from '@/components/PieChart'
+import { Card } from '@/components/ui/card'
+import { useWindowWidth } from '@react-hook/window-size'
 
-export default function Page() {
+import { Speech } from 'lucide-react'
+
+const cardData: CardProps[] = [
+  {
+    label: 'Total Solicitudes',
+    amount: '100',
+    description: 'total de solicitudes del mes',
+    icon: Speech
+  },
+  {
+    label: 'Total Solicitudes',
+    amount: '100',
+    description: 'total de solicitudes del mes',
+    icon: Speech
+  },
+ 
+]
+export default function Dashboard () {
+  const onlyWidth = useWindowWidth()
+  const mobileWidth = onlyWidth < 1020
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset>
-        <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12">
-          <div className="flex items-center gap-2 px-4">
-            <SidebarTrigger className="-ml-1" />
-            <Separator orientation="vertical" className="mr-2 h-4" />
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href="#">
-                    Building Your Application
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-        </header>
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-            <div className="aspect-video rounded-xl bg-muted/50" />
-          </div>
-          <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className='flex flex-col gap-5 w-full'>
+      <PageTitle title='Dashboard' />
+      {mobileWidth && (
+        <section className='grid grid-cols-1 gap-4 transition-all lg:grid-cols-2'>
+          <PieChartG />
+          <Card>
+            Usuarios
+          </Card>
+        </section>
+      )}
+
+      <section className='grid w-full grid-cols-1 gap-4 gap-x-8 transition-all sm:grid-cols-2 xl:grid-cols-4'>
+        {cardData.map((d, i) => (
+          <CardDash
+            key={i}
+            label={d.label}
+            amount={d.amount}
+            description={d.description}
+            icon={d.icon}
+          />
+        ))}
+      </section>
+      {!mobileWidth && (
+        <section className='grid grid-cols-1 gap-4 transition-all lg:grid-cols-2'>
+          <PieChartG />
+          <Card>
+            Usuarios
+          </Card>
+        </section>
+      )}
+    </div>
   )
 }
