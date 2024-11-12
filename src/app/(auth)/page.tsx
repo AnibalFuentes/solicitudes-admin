@@ -1,4 +1,4 @@
-import Logo from '@/components/logo'
+// import Logo from '@/components/logo'
 import { Metadata } from 'next'
 import SignInForm from '@/app/(auth)/components/sign-in.form'
 
@@ -15,7 +15,7 @@ const AuthPage = () => {
         {/* <===================Image===================> */}
         <div className='relative hidden h-full flex-col p-10 text-white lg:flex'>
           <div className='bg-auth absolute inset-0'></div>
-          <Logo />
+          {/* <Logo /> */}
           <div className='relative z-20 mt-auto'>
             <p className='text-lg'>
             {"este administrador hace tu vida mas facil"}

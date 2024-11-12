@@ -54,14 +54,14 @@ export default function SideNavbar (/* {}: Props */) {
 
             icon: Speech,
             variant: 'ghost',
-            href: '/requests'
+            href: '/dashboard/requests'
           },
           {
             title: 'Usuarios',
 
             icon: Users2,
             variant: 'ghost',
-            href: '/users'
+            href: '/dashboard/users'
           }
         ]}
       />

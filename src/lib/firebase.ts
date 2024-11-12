@@ -90,7 +90,7 @@ export const getCollection = async <T = DocumentData>(collectionName: string, qu
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   export const setDocument = async (path: string, data: any) => {
     
-    data.createdAt = serverTimestamp() 
+    
     
     return setDoc(doc(db,path),data)
   };

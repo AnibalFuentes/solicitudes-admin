@@ -9,67 +9,84 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   createUser,
+  getDocument,
   setDocument,
   signOutAccount,
   updateUser
 } from '@/lib/firebase'
 import { useState } from 'react'
-import { LoaderCircle, Eye, EyeOff } from 'lucide-react'
+import { LoaderCircle, Eye, EyeOff, RollerCoaster } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { User } from '@/interfaces/user.interface'
+import { SelectRole, SelectUnidad } from './select-type'
+import { serverTimestamp } from 'firebase/firestore'
 
 const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+  const [unidad, setUnidad] = useState('')
+  const [role, setRole] = useState('')
 
-  const formSchema = z
-    .object({
-      uid: z.string(),
-      name: z
-        .string()
-        .min(2, { message: 'Este campo es requerido, al menos 2 caracteres' }),
-      email: z
-        .string()
-        .email('El formato del email no es válido. Ejemplo: user@mail.com')
-        .min(1, { message: 'Este campo es requerido' }),
-      password: z.string().min(6, {
-        message: 'La contraseña debe contener al menos 6 caracteres'
+  const formSchema = z.object({
+    uid: z.string(),
+    state: z.boolean(),
+    name: z
+      .string()
+      .min(2, { message: 'Este campo es requerido, al menos 2 caracteres' }),
+    phone: z
+      .string()
+      .regex(
+        /^(\+?\d{1,3}[-\s]?)?(\(?\d{1,4}\)?[-\s]?)?(\d{1,4}[-\s]?\d{1,4}[-\s]?\d{1,4})$/,
+        {
+          message: 'Número de teléfono inválido'
+        }
+      ),
+      unidad: z.enum(['UPGD', 'UI'], {
+        required_error: 'Este campo es requerido'
       }),
-      confirmPassword: z
-        .string()
-        .min(6, { message: 'La confirmación es requerida' })
+      role: z.enum(['ADMIN', 'OPERARIO','USUARIO'], {
+        required_error: 'Este campo es requerido'
+      }),
+    email: z
+      .string()
+      .email('El formato del email no es válido. Ejemplo: user@mail.com')
+      .min(1, { message: 'Este campo es requerido' }),
+    password: z.string().min(6, {
+      message: 'La contraseña debe contener al menos 6 caracteres'
     })
-    .refine(data => data.password === data.confirmPassword, {
-      message: 'Las contraseñas no coinciden',
-      path: ['confirmPassword'] // Asigna el error al campo confirmPassword
-    })
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       uid: '',
+      state: true,
       name: '',
       email: '',
       password: '',
-      confirmPassword: ''
+      unidad: undefined,
+      role: undefined
     }
   })
 
-  const { register, handleSubmit, formState } = form
+  const { register, handleSubmit, formState, setValue } = form
+
   const { errors } = formState
 
   const onSubmit = async (user: z.infer<typeof formSchema>) => {
+    if (unidad==undefined) {
+      toast.error('Selecciona una unidad', { duration: 2500 })
+      return
+    }
     setIsLoading(true)
+
     try {
       const res = await createUser(user)
       await updateUser({ displayName: user.name })
       user.uid = res.user.uid
 
-      // Eliminar confirmPassword antes de guardar en Firestore
-      const { confirmPassword, ...userData } = user // Esto elimina confirmPassword
-
-      await createUserInDB(userData as User).then(async () => {
+      await createUserInDB(user).then(async () => {
         await signOutAccount()
       })
     } catch (error: unknown) {
@@ -84,12 +101,22 @@ const SignUpForm = () => {
   }
 
   const createUserInDB = async (user: User) => {
-    const path = `users/${user.uid}`
+    const path = `users/users` // Usa un ID fijo para este documento (ej., 'uniqueDocumentId')
     setIsLoading(true)
+
     try {
       delete user.password
+      user.createdAt = new Date().toLocaleString()
 
-      await setDocument(path, user)
+      // Obtén el documento existente para verificar si ya tiene un array de usuarios
+      const doc = await getDocument(path)
+      let usersArray = doc?.users || [] // Si ya existe, usa el array de usuarios, si no, inicializa como []
+
+      // Agrega el nuevo usuario al array
+      usersArray.push(user)
+
+      // Actualiza el documento con el array modificado
+      await setDocument(path, { users: usersArray })
       toast.success('Usuario Creado Exitosamente', { duration: 2500 })
     } catch (error) {
       if (error instanceof Error) {
@@ -124,6 +151,42 @@ const SignUpForm = () => {
               autoComplete='name'
             />
             <p className='form-error'>{errors.name?.message}</p>
+          </div>
+          {/* Telefono */}
+          <div className='mb-3'>
+            <Label htmlFor='phone'>Telefono</Label>
+            <Input
+              {...register('phone')}
+              id='phone'
+              placeholder='1233456789'
+              type='tel'
+              autoComplete='phone'
+            />
+            <p className='form-error'>{errors.phone?.message}</p>
+          </div>
+          <div className='mb-3'>
+            <Label htmlFor='unidad'>Unidad</Label>
+            <SelectUnidad
+              unidad={unidad}
+              onUnidadChange={(value:any) => {
+                setUnidad(value)
+                setValue('unidad', value) // Actualiza el valor en el formulario
+              }}
+            />
+
+            <p className='form-error'>{errors.unidad?.message}</p>
+          </div>
+          <div className='mb-3'>
+            <Label htmlFor='role'>role</Label>
+            <SelectRole
+              role={role}
+              onRoleChange={(value:any) => {
+                setRole(value)
+                setValue('role', value) // Actualiza el valor en el formulario
+              }}
+            />
+
+            <p className='form-error'>{errors.unidad?.message}</p>
           </div>
 
           {/* Correo */}
@@ -160,29 +223,6 @@ const SignUpForm = () => {
               )}
             </button>
             <p className='form-error'>{errors.password?.message}</p>
-          </div>
-
-          {/* Confirmar Contraseña */}
-          <div className='mb-3 relative'>
-            <Label htmlFor='confirmPassword'>Confirmar Contraseña</Label>
-            <Input
-              {...register('confirmPassword')}
-              id='confirmPassword'
-              placeholder='******'
-              type={showConfirmPassword ? 'text' : 'password'}
-            />
-            <button
-              type='button'
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              className='absolute right-2 top-9'
-            >
-              {showConfirmPassword ? (
-                <EyeOff className='h-5 w-5' />
-              ) : (
-                <Eye className='h-5 w-5' />
-              )}
-            </button>
-            <p className='form-error'>{errors.confirmPassword?.message}</p>
           </div>
 
           <Link

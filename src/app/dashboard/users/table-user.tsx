@@ -41,6 +41,7 @@ export function UsersDataTable<TData, TValue> ({
   columns,
   data
 }: DataTableProps<TData, TValue>) {
+  console.log("Data en UsersDataTable:", data);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -72,9 +73,9 @@ export function UsersDataTable<TData, TValue> ({
       <div className='flex items-center py-4 justify-between'>
         <Input
           placeholder='Filter emails...'
-          value={(table.getColumn('status')?.getFilterValue() as string) ?? ''}
+          value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
           onChange={event =>
-            table.getColumn('status')?.setFilterValue(event.target.value)
+            table.getColumn('name')?.setFilterValue(event.target.value)
           }
           className='max-w-sm'
         />
