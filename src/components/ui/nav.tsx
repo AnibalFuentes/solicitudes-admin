@@ -1,8 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-
-
 import { cn } from '@/lib/utils'
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -14,8 +12,9 @@ import {
 import { usePathname } from 'next/navigation'
 
 import UserSidebar from '../user'
-import { useWindowWidth } from '@react-hook/window-size'
 import { LucideIcon } from 'lucide-react'
+import { useIsMobile } from '@/hooks/use-mobile'
+
 
 interface NavProps {
   isCollapsed: boolean
@@ -28,18 +27,18 @@ interface NavProps {
   }[]
 }
 
-export function Nav ({ links, isCollapsed }: NavProps) {
+export function Nav({ links, isCollapsed }: NavProps) {
   const pathName = usePathname()
-  const onlyWidth = useWindowWidth()
-  const mobileWidth = onlyWidth < 768
+  const isMobile = useIsMobile()
+
   return (
     <TooltipProvider>
       <div
         data-collapsed={isCollapsed}
-        className=' group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2 '
+        className='group flex flex-col gap-4 py-2 data-[collapsed=true]:py-2'
       >
-        <nav className=' grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2'>
-          <UserSidebar isCollapsed={isCollapsed} mobileWidth={mobileWidth} />
+        <nav className='grid gap-1 px-2 group-[[data-collapsed=true]]:justify-center group-[[data-collapsed=true]]:px-2'>
+          <UserSidebar isCollapsed={isCollapsed} mobileWidth={isMobile} />
 
           {links.map((link, index) =>
             isCollapsed ? (
@@ -49,7 +48,7 @@ export function Nav ({ links, isCollapsed }: NavProps) {
                     href={link.href}
                     className={cn(
                       buttonVariants({
-                        variant: link.href == pathName ? 'default' : 'ghost',
+                        variant: link.href === pathName ? 'default' : 'ghost',
                         size: 'icon'
                       }),
                       'h-9 w-9',
@@ -61,15 +60,10 @@ export function Nav ({ links, isCollapsed }: NavProps) {
                     <span className='sr-only'>{link.title}</span>
                   </Link>
                 </TooltipTrigger>
-                <TooltipContent
-                  side='right'
-                  className='flex items-center gap-4'
-                >
+                <TooltipContent side='right' className='flex items-center gap-4'>
                   {link.title}
                   {link.label && (
-                    <span className='ml-auto text-muted-foreground'>
-                      {link.label}
-                    </span>
+                    <span className='ml-auto text-muted-foreground'>{link.label}</span>
                   )}
                 </TooltipContent>
               </Tooltip>
@@ -79,7 +73,7 @@ export function Nav ({ links, isCollapsed }: NavProps) {
                 href={link.href}
                 className={cn(
                   buttonVariants({
-                    variant: link.href == pathName ? 'default' : 'ghost',
+                    variant: link.href === pathName ? 'default' : 'ghost',
                     size: 'sm'
                   }),
                   link.variant === 'default' &&
@@ -93,8 +87,7 @@ export function Nav ({ links, isCollapsed }: NavProps) {
                   <span
                     className={cn(
                       'ml-auto',
-                      link.variant === 'default' &&
-                        'text-background dark:text-white'
+                      link.variant === 'default' && 'text-background dark:text-white'
                     )}
                   >
                     {link.label}

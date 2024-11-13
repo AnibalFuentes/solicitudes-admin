@@ -1,18 +1,17 @@
 'use client'
 
 import { Button } from '@/components/ui/button'
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger
-} from '@/components/ui/dropdown-menu'
+// import {
+//   DropdownMenu,
+//   DropdownMenuContent,
+//   DropdownMenuItem,
+//   DropdownMenuLabel,
+//   DropdownMenuSeparator,
+//   DropdownMenuTrigger
+// } from '@/components/ui/dropdown-menu'
 import { ColumnDef } from '@tanstack/react-table'
-import { MoreHorizontal, ArrowUpDown } from 'lucide-react'
+import { ArrowUpDown } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import { cn } from '@/lib/utils'
 import { User } from '@/interfaces/user.interface'
 

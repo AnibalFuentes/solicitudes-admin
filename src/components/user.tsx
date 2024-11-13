@@ -38,7 +38,7 @@ const capitalizeWords = (str: string) => {
 
 
 export default function UserSidebar({ isCollapsed, mobileWidth }: Props) {
-  const user = useUser()
+  const {user} = useUser()
 
   return (
     <div className='mb-20 cursor-pointer'>

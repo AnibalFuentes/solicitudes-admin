@@ -21,7 +21,7 @@ export default function RootLayout ({
   children: React.ReactNode
 }>) {
 
-  const user = useUser()
+  const {user} = useUser()
   const pathName = usePathname()
 
   const authRoutes = ['/', '/forgot-password']

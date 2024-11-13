@@ -8,9 +8,9 @@ email:string;
 password?:string;
 state:boolean;
 phone:string;
-unidad:'UPGD'|'UI';
-role:'ADMIN'|'OPERARIO'|'USUARIO';
-createdAt?:String;
+unidad:string;
+role:string,
+createdAt?:string;
 }
 
 // interface Unidad{

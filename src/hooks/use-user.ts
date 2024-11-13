@@ -7,9 +7,9 @@ import { useEffect, useState } from "react";
 import { setInLocalstorage } from "../../actions/set-in-localstorage";
 import { getFromLocalstorage } from "../../actions/get-from-localstorage";
 
-export const useUser = (): { user: User | undefined; users: User[] | undefined } => {
+export const useUser = () => {
   const [user, setUser] = useState<User | undefined>(undefined);
-  const [users, setUsers] = useState<User[] | undefined>(undefined);
+  const [users, setUsers] = useState<User[] | undefined>(undefined); // Estado para la lista de usuarios
 
   const pathName = usePathname();
   const router = useRouter();
@@ -25,6 +25,7 @@ export const useUser = (): { user: User | undefined; users: User[] | undefined }
       const res = await getDocument(path);
 
       // Verifica si el documento tiene el array 'users' y encuentra el usuario con el UID dado
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const user = res?.users?.find((u: any) => u.uid === uid);
       console.log(user);
 
@@ -32,15 +33,16 @@ export const useUser = (): { user: User | undefined; users: User[] | undefined }
         // Almacena el usuario logueado en el estado y en el localStorage
         setUser(user);
         setInLocalstorage('user', user);
-
-        // Si el usuario es ADMIN, almacena todo el arreglo de usuarios en el estado y en localStorage
-        if (user.role === 'ADMIN' && Array.isArray(res?.users)) {
-          setUsers(res?.users as User[]); // Almacena todos los usuarios en el estado
-          setInLocalstorage('users', res?.users); // Almacena todos los usuarios en localStorage
+        
+        // Si el rol es 'ADMIN', almacena la lista de usuarios en el estado
+        if (user.role === "ADMIN") {
+          setUsers(res?.users || []);
+          // setInLocalstorage('users', res?.users||[]);
         }
       } else {
         console.error('Usuario no encontrado');
       }
+
     } catch (error: unknown) {
       console.error('Error al obtener el usuario:', error);
     }
@@ -50,13 +52,19 @@ export const useUser = (): { user: User | undefined; users: User[] | undefined }
     return onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         const userInLocal = getFromLocalstorage('user');
+        const usersInLocal = getFromLocalstorage('users'); // Trae la lista de usuarios del localStorage
+
         if (userInLocal) setUser(userInLocal);
-        else getUserFromDB(authUser.uid);
+        if (usersInLocal) setUsers(usersInLocal); // Si hay una lista en el localStorage, la establece
+
+        if (!userInLocal || !usersInLocal) {
+          await getUserFromDB(authUser.uid); // Si no hay usuario o lista en el localStorage, obtiene los datos desde la base de datos
+        }
       } else {
         if (isInProtectedRoute) router.push('/');
       }
     });
-  }, []);
+  }, [isInProtectedRoute, router]);
 
-  return { user, users };
+  return { user, users }; // Retorna tanto el usuario como la lista de usuarios solo si es ADMIN
 };

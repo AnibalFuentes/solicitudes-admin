@@ -1,14 +1,6 @@
 'use client'
 import * as React from 'react'
-import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-// import {
-//   DropdownMenu,
-//   DropdownMenuCheckboxItem,
-//   DropdownMenuContent,
-//   DropdownMenuTrigger
-// } from '@/components/ui/dropdown-menu'
-
 import {
   ColumnDef,
   flexRender,
@@ -21,7 +13,6 @@ import {
   getFilteredRowModel,
   VisibilityState
 } from '@tanstack/react-table'
-
 import {
   Table,
   TableBody,
@@ -30,18 +21,19 @@ import {
   TableHeader,
   TableRow
 } from '@/components/ui/table'
-import { CirclePlus } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
+import SignUpFormDialog from './components/signUpDialog'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
 }
 
-export function UsersDataTable<TData, TValue> ({
+export function UsersDataTable<TData, TValue>({
   columns,
   data
 }: DataTableProps<TData, TValue>) {
-  console.log("Data en UsersDataTable:", data);
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -79,42 +71,8 @@ export function UsersDataTable<TData, TValue> ({
           }
           className='max-w-sm'
         />
-        {/* <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant='outline' className='ml-auto'>
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align='end'>
-            {table
-              .getAllColumns()
-              .filter(column => column.getCanHide())
-              .map(column => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className='capitalize'
-                    checked={column.getIsVisible()}
-                    onCheckedChange={value => column.toggleVisibility(!!value)}
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                )
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu> */}
-        <Button className='px-6'>
-          Crear
-          <CirclePlus className='ml-2 w-[20px]' />
-        </Button>
+        <SignUpFormDialog />
       </div>
-      {table.getFilteredSelectedRowModel().rows.length > 0 && (
-        <div className='flex-1 text-sm text-muted-foreground'>
-          {table.getFilteredSelectedRowModel().rows.length} de{' '}
-          {table.getFilteredRowModel().rows.length} fila(s) seleccionada(s).
-        </div>
-      )}
-
       <div className='rounded-md border'>
         <Table>
           <TableHeader>

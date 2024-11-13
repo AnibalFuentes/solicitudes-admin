@@ -9,24 +9,27 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import {
   createUser,
-  getDocument,
+  // getDocument,
   setDocument,
   signOutAccount,
   updateUser
 } from '@/lib/firebase'
 import { useState } from 'react'
-import { LoaderCircle, Eye, EyeOff, RollerCoaster } from 'lucide-react'
+import { LoaderCircle, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { User } from '@/interfaces/user.interface'
 import { SelectRole, SelectUnidad } from './select-type'
-import { serverTimestamp } from 'firebase/firestore'
+// import { serverTimestamp } from 'firebase/firestore'
+import { useUser } from '@/hooks/use-user'
 
 const SignUpForm = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
+  // const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false)
   const [unidad, setUnidad] = useState('')
   const [role, setRole] = useState('')
+
+  const {users}=useUser()
 
   const formSchema = z.object({
     uid: z.string(),
@@ -42,10 +45,10 @@ const SignUpForm = () => {
           message: 'Número de teléfono inválido'
         }
       ),
-      unidad: z.enum(['UPGD', 'UI'], {
+      unidad: z.string( {
         required_error: 'Este campo es requerido'
       }),
-      role: z.enum(['ADMIN', 'OPERARIO','USUARIO'], {
+      role: z.string( {
         required_error: 'Este campo es requerido'
       }),
     email: z
@@ -65,8 +68,8 @@ const SignUpForm = () => {
       name: '',
       email: '',
       password: '',
-      unidad: undefined,
-      role: undefined
+      // unidad: '',
+      // role: ''
     }
   })
 
@@ -75,10 +78,10 @@ const SignUpForm = () => {
   const { errors } = formState
 
   const onSubmit = async (user: z.infer<typeof formSchema>) => {
-    if (unidad==undefined) {
-      toast.error('Selecciona una unidad', { duration: 2500 })
-      return
-    }
+    // if (unidad==undefined) {
+    //   toast.error('Selecciona una unidad', { duration: 2500 })
+    //   return
+    // }
     setIsLoading(true)
 
     try {
@@ -109,8 +112,8 @@ const SignUpForm = () => {
       user.createdAt = new Date().toLocaleString()
 
       // Obtén el documento existente para verificar si ya tiene un array de usuarios
-      const doc = await getDocument(path)
-      let usersArray = doc?.users || [] // Si ya existe, usa el array de usuarios, si no, inicializa como []
+      // const doc = await getDocument(path)
+      const usersArray = users || [] // Si ya existe, usa el array de usuarios, si no, inicializa como []
 
       // Agrega el nuevo usuario al array
       usersArray.push(user)
@@ -168,7 +171,7 @@ const SignUpForm = () => {
             <Label htmlFor='unidad'>Unidad</Label>
             <SelectUnidad
               unidad={unidad}
-              onUnidadChange={(value:any) => {
+              onUnidadChange={(value:string) => {
                 setUnidad(value)
                 setValue('unidad', value) // Actualiza el valor en el formulario
               }}
@@ -180,7 +183,7 @@ const SignUpForm = () => {
             <Label htmlFor='role'>role</Label>
             <SelectRole
               role={role}
-              onRoleChange={(value:any) => {
+              onRoleChange={(value:string) => {
                 setRole(value)
                 setValue('role', value) // Actualiza el valor en el formulario
               }}

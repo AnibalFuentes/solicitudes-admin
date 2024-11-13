@@ -8,7 +8,18 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-export function SelectUnidad ({ unidad, onUnidadChange }: any) {
+interface unidadesProps{
+  unidad: string
+  onUnidadChange: (value: string) => void
+
+}
+interface rolesProps{
+  role: string
+  onRoleChange: (value: string) => void
+
+}
+
+export function SelectUnidad ({ unidad, onUnidadChange }: unidadesProps) {
   const handleUnidadChange = (value: string) => {
     onUnidadChange(value) // Pasamos el valor seleccionado al componente padre
   }
@@ -27,7 +38,7 @@ export function SelectUnidad ({ unidad, onUnidadChange }: any) {
     </Select>
   )
 }
-export function SelectRole ({ role, onRoleChange }: any) {
+export function SelectRole ({ role, onRoleChange }: rolesProps) {
   const handleUnidadChange = (value: string) => {
     onRoleChange(value) // Pasamos el valor seleccionado al componente padre
   }

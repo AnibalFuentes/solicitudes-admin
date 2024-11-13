@@ -13,14 +13,9 @@ export default function DashboardLayout ({
             'debug-screens': process.env.NODE_ENV === 'development'
           })}
         >
-          {
-            //? Sidebar
-          }
-          {/* <p className='border'>Sidebar</p> */}
+          
           <SideNavbar />
-          {
-            //? MainPage
-          }
+          
           <div className='p-8 w-full'>
             {children}
             {/* <Toaster /> */}

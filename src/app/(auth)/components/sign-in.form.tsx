@@ -62,7 +62,7 @@ const SignInForm = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} method='post'>
         <div className='grid gap-2'>
           {/* <=================Email=============> */}
           <div className='mb-3'>
